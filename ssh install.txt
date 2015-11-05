@@ -1,0 +1,52 @@
+//site.pp
+
+import 'nodes.pp'
+
+//node.pp
+node sample{
+		include ssh
+	 }
+//create ssh module
+
+1.goto modules
+2.create ssh folder(modules/ssh)
+3.create manifests folder(modules/ssh/manifests)
+4.create init.pp(modules/ssh/manifests/init.pp)
+5.create files(modules/ssh/files)
+
+//init.pp
+
+class ssh
+{
+	include ssh::install,ssh::config,ssh::service
+}
+
+class ssh::install{
+			package {"ssh":
+				ensure =>present,
+				}
+		  }
+class ssh::config{
+			//after puppet installation we need to copy config files from installation directory to these place[/modules/ssh/files/sshd_config]so, if any modifications in configurations can be done here so,that puppet can see from here and make changes.it can be done by following manner
+		
+				file{ "/etc/ssh/sshd_config":
+					ensure =>present,
+					owner =>'root',
+					group =>'root',
+					mode  =>600,
+					source =>"puppet:///modules/ssh/sshd_config",
+				    	notify =>Class["ssh::service"],  //if any congifuration changes,then ssh service has to be restart automatically.it can be done by notifying
+				    }
+			
+		 }
+class ssh::service{
+			
+			service { "ssh":
+				ensure =>running,
+				hasstatus =>true,
+				hasrestart =>true,
+				enable=>true,
+				}		
+
+		  }
+class["ssh::install"]->class["ssh::config"]->class["ssh::service"]
