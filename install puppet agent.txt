@@ -1,0 +1,67 @@
+adding the ubuntu box to vagrant
+	to download ubuntu
+		https://github.com/binpiper/puppet-fundamental-lab
+	commands should used in agent os
+		cd puppet-fundamentals-lab
+		vagrant box add trusty64 trusty-server-cloudimg-amd64-vagrant-disk1.box
+	
+booting wiki and wikitest servers
+	booting ubuntu server
+		cd puppet-fundamentals-lab/wikitest
+		vagrant up
+	booting centos server	
+		cd puppet-fundamentals-lab/wikitest
+		vagrant up
+	to accessing the servers
+		vagrant ssh or ssh client(applicable to both centos and ubuntu)
+
+adding the puppet master to the host files
+	inorder to agents  resolve host name of puppet master we need to add puppetmaster to the host files on these agents because ssl certificates and it inturn require hostnames
+		first goto vagrant ssh
+		sudo -i
+		echo 172.31.0.201(ip of puppet master) puppet master >> /etc/hosts
+	to check status
+		cat /etc/hosts
+
+installing puppet agent on centos
+	install puppet repository
+		sudo yum install http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
+	to install puppet agent
+		sudo yum install puppet
+	install nano on centos
+		sudo yum -y install nano
+	need to modify puppet.conf(/etc/puppet/puppet.conf) to tell agent about puppetmaster
+		in [agent]
+		server=puppetmaster
+	generating ssl certificates
+		sudo puppet agent --verbose --no-daemonize --onetime
+
+installing puppet agent on ubuntu
+	install puppet repository
+		sudo wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb
+	add puppet repository
+		sudo dpkg -i puppetlabs-release-trusty.deb
+		sudo apt-get update
+	to install puppet agent
+		sudo apt-get install puppet
+	need to modify puppet.conf(/etc/puppet/puppet.conf) to tell agent about puppetmaster
+		in [agent]
+		server=puppetmaster
+	enable puppet agent
+		sudo puppet agent --enable
+	generating ssl certificates
+		sudo puppet agent --verbose --no-daemonize --onetime
+	
+	
+signing agent certificates
+
+	on puppetmaster
+		sudo puppet cert list
+		sudo puppet cert sign wiki
+		sudo puppet cert sign wikitest
+	wiki server(agent)
+		sudo puppet agent --verbose --no-daemonize --onetime
+	wikitest server(agent)
+		sudo puppet agent --enable
+		sudo puppet agent --verbose --no-daemonize --onetime
+		

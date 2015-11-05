@@ -1,0 +1,90 @@
+downloading virtualbox and vagrant
+	for virtualbox
+		https://www.virtualbox.org/wiki/downloads
+	for vagrant
+		https://www.vagrantup.com/downloads.html
+
+downloading the centos and ubuntu boxes
+	https://github.com/benpiper/puppet-fundamentals-lab
+	download centos and ubuntu		
+
+booting puppetmaster server
+	cd puppet-fundamentals-lab
+	to add centos box into vagrant
+		vagrant box add centos65-base centos65.box
+	boot puppetmaster server
+		vagrant up
+	to view vagnant box whether centos installed
+		vagrant box list
+	to install nano git and ntp
+		sudo yum -y install nano git ntp
+	start ntp service
+		sudo service ntpd start
+	to ensure ntp service on boot
+		sudo chkconfig ntpd on
+
+installing puppet server
+	fetch puppet repository(to download)
+		sudo yum -y install http://yum.pupprtlabs.com/puppetlabs-release-el-6.noarch.rpm
+	install puppet server
+		sudo yum -y install puppet server	
+	to know puppet enterprise version after installation
+		puppet master --version
+
+setting up directory environments
+//	create production environment
+//		each directory environment is controlled by environment configuration file
+//			/etc/puppet/environment/production(it may be devlop/test..)/environment.conf
+//		{ controls the environment specific settings for the production(it may be devlop/test..) environment
+		
+//	puppet configuration file(controls many aspects like puppet use directory enviroment or not) 
+//			/etc/puppet.puppet.conf(present on master and agent)
+//			it contains agent, master and main sections(configurations applicable depending on requirement of puppet)
+	creating directory environment
+		sudo mkdir -p /etc/puppet/environments/production/{modules,manifests}	
+	creating environment configuration file
+		sudo nano environment.conf	
+			modulepath=/etc/puppet/environments/production/modules
+			environment_timeout = 5s //	lower the environment timeout
+	modify puppet conf file to tell about new directory that we created
+		cd etc/puppet
+	to open puppet.conf
+		sudo nano puppet.conf
+		create [master] in puppet.conf file
+			[master]
+			environmentpath = $confdir/environments
+			basemodulepath = $confdir/modules:/opt/puppet/share/modules
+	setup alternative name(in puppet.conf file )
+		goto [main]section
+			[main]
+			dns_alt_names = puppet,puppetmaster 
+			
+puppetmaster security:dealing with SElinux
+	seLInux set to permissive so that it helps in
+		facillitates trouble shooting
+		more secure
+	command to set permissive
+		sudo setenforce permissive
+		sudo sed -i 's\=enforcing\=permissive\g' /etc/sysconfig/selinux
+	to verify
+		sudo getenforce
+	to view file
+		sudo cat /etc/sysconfig/selinux
+
+puppetmaster security:generating certificates
+	to generate certificate
+		sudo puppet master --verbose --no-daemonize 
+	to verify
+		sudo ls -la /var/lib/puppet/ssl
+
+puppetmaster security:configuring ip tables firewalls
+//	puppetnode to communicate puppet master on 8140 port,so we ned to enable	
+	ipconfiguration path
+		/etc/sysconfig/iptables
+	sudo nano iptables (to open iptables)
+		-A INPUT -j REJECT  --reject NEW -m tcp -p tcp --dport 8140 -j ACCEPT		
+	after modify we need to reload
+		sudo service iptables restart	
+installing apache and passenger
+
+
