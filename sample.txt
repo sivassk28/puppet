@@ -1,0 +1,28 @@
+file { 'sshconfig':
+	name =>'usr/local/etc/sshconfig,
+	owner =>'root',
+	}
+service { 'sshd':
+//	subscribe =>File[sshconfig]
+	require =>File['sshdconfig','sshdconfig']
+	}
+file {'sshdconfig':
+	name =>$operating system? {
+	solaris =>'usr/local/bin',
+	default => 'etc/ssh/config',
+	},
+	owner =>root,
+	group =>root,
+	mode =>644;
+}
+class unix {
+	file { '/etc/password:
+		owner =>'root',
+		group =>'root',
+		mode =>'644';
+		}
+}
+class windows inherits unix {
+	File{ '/etc/password':
+		group =>undef
+		}
