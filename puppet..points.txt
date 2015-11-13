@@ -1,0 +1,8 @@
+module contains
+1.files	//STATIC files like config files
+2.templates//where dynamic content is stored //erb-embedded resource(<%= %>) block like "inline template like time stamp"
+3.manifests
+4.facts.d // external facts
+5.tests //unit testing
+6.specs //unit testing
+7.lib //contain custom facts($os family predefined variables)
