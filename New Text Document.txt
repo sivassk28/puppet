@@ -1,0 +1,11 @@
+creating modules
+module structure
+customizing modules
+condtionals
+downloading from puppet forge
+apache module
+vcsrepo module
+resource ordering
+	manually arranging flow of execution
+mysql module
+firewall module
