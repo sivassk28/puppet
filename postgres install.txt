@@ -1,0 +1,35 @@
+//site.pp
+import 'nodes.pp'
+
+//nodes.pp
+node sample{
+		include postgres
+	  }
+
+
+// create postgres folder in directory(modules/postgres)
+// create manifests(modules/postgres/manifests)
+// create init.pp(modules/postgres/manifests/init.pp)
+// create files(modules/postgres/files)
+
+
+//init.pp
+
+class postgres{
+		include postgres::install,postgres::config,postgres::service
+	      }
+
+class postgres::install{
+		package { 'postgresql':
+				ensure =>present,
+			}
+		}
+
+class postgres::config{
+			}
+class postgres::service{
+			service{'postgresql':
+				ensure =>running,
+				enable =>true,
+				}
+			}
